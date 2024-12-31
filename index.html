@@ -766,6 +766,11 @@
                                                         <li><a class="dropdown-item" href="#" data-sort="age">Age</a></li>
                                                     </ul>
                                                 </div>
+                                                <div class="btn-group ms-2">
+                                                    <button type="button" class="btn btn-outline-primary" id="inStockFilter">
+                                                        Show In Stock Only
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -1678,14 +1683,6 @@
                             const aAvg = aRatings.length ? aRatings.reduce((sum, r) => sum + r, 0) / aRatings.length : -1;
                             const bAvg = bRatings.length ? bRatings.reduce((sum, r) => sum + r, 0) / bRatings.length : -1;
                             return bAvg - aAvg; // Sort in descending order
-                        case 'age':
-                            // Extract age numbers for comparison
-                            const getAge = (whiskey) => {
-                                const name = whiskey.name.toLowerCase();
-                                const ageMatch = name.match(/\d+\s*(?:year|yr)/);
-                                return ageMatch ? parseInt(ageMatch[0]) : 0;
-                            };
-                            return getAge(b) - getAge(a); // Sort in descending order
                         default:
                             return 0;
                     }
@@ -1698,6 +1695,21 @@
                 const selectedText = this.textContent;
                 dropdownButton.textContent = `Sort By: ${selectedText}`;
             });
+        });
+
+        // Add in-stock filter handling
+        let showInStockOnly = false;
+        const inStockButton = document.getElementById('inStockFilter');
+        
+        inStockButton.addEventListener('click', function() {
+            showInStockOnly = !showInStockOnly;
+            this.classList.toggle('active');
+            
+            const filtered = showInStockOnly
+                ? window.whiskeyData.filter(w => w["in_stock?"] === "Yes")
+                : window.whiskeyData;
+            
+            displayWhiskeys(filtered);
         });
 
         function updateMapStats() {
