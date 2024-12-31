@@ -363,7 +363,15 @@
             margin-bottom: 20px;
             transform: scale(1);
             opacity: 1;
-            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        box-shadow 0.3s ease; /* Add transition for box-shadow */
+        }
+
+        /* Add hover effect for the landing page logo */
+        #landingOverlay img:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+                       0 0 60px rgba(255, 255, 255, 0.6),
+                       0 0 90px rgba(255, 255, 255, 0.4);
         }
 
         #landingOverlay.blow-up {
@@ -392,6 +400,83 @@
 
         #mainContent.fade-in {
             opacity: 1;
+        }
+
+        /* Add these styles to your existing CSS */
+        .nav-link {
+            color: #495057;
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background-color: #007bff;
+        }
+
+        .glow-card {
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .glow-card:hover {
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+        }
+
+        #nextdram {
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .list-group-item-action {
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .list-group-item-action:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .progress {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        .rounded {
+            border-radius: 0.25rem !important;
+        }
+
+        .small {
+            font-size: 0.875rem;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
+        }
+
+        /* Ensure content is visible */
+        #nextdram, #map, #ratings {
+            display: none;
+        }
+
+        #nextdram.active, #map.active, #ratings.active {
+            display: block;
         }
     </style>
 </head>
@@ -444,6 +529,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-page="ratings">Rating Charts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="nextdram">Your Next Dram</a>
                         </li>
                         <li class="nav-item mt-3">
                             <a class="nav-link" href="https://www.instagram.com/peaches_the_wow/?hl=en" target="_blank">
@@ -609,13 +697,23 @@
                             <div class="col">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h2 class="card-title mb-4 bold-header">Distillery Map</h2>
-                                        <div class="map-container" style="position: relative; padding-bottom: 75%; height: 0; overflow: hidden;">
-                                            <iframe 
-                                                id="scotchMap"
-                                                src="https://www.google.com/maps/d/embed?mid=1JnLdvvWy_zUWPHdj9WgQIkYDi44&femb=1&ll=56.89521033132374%2C-3.526848373432303&z=7" 
-                                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                                                allowfullscreen>
+                                        <div class="sticky-header">
+                                            <h2 class="card-title bold-header">Distillery Map</h2>
+                                        </div>
+                                        
+                                        <!-- Search Box -->
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-search"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="mapSearch" placeholder="Search distilleries on map...">
+                                        </div>
+
+                                        <!-- Map Container -->
+                                        <div class="map-container">
+                                            <iframe id="scotchMap"
+                                                src="https://www.google.com/maps/d/embed?mid=1JnLdvvWy_zUWPHdj9WgQIkYDi44&femb=1&ll=56.89521033132374%2C-3.526848373432303&z=7"
+                                                width="100%" height="600" style="border:0;" allowfullscreen="" loading="lazy">
                                             </iframe>
                                         </div>
                                     </div>
@@ -687,46 +785,17 @@
                             <div class="col">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="sticky-header">
-                                            <h2 class="card-title bold-header">Rating Chart</h2>
-                                        </div>
-                                        
-                                        <!-- Summary Statistics -->
-                                        <div class="row mb-4">
-                                            <div class="col-md-3">
-                                                <div class="stats-card">
-                                                    <h6 class="bold-header">Total Rated</h6>
-                                                    <div id="totalRated" class="h3">-</div>
-                                                </div>
+                                        <h2 class="card-title bold-header">Rating Analysis</h2>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-4">
+                                                <div id="leslieRatingChart" style="width: 100%; height: 400px;"></div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="stats-card">
-                                                    <h6 class="bold-header">Leslie's Average</h6>
-                                                    <div id="leslieAvg" class="h3">-</div>
-                                                </div>
+                                            <div class="col-md-6 mb-4">
+                                                <div id="davidRatingChart" style="width: 100%; height: 400px;"></div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="stats-card">
-                                                    <h6 class="bold-header">David's Average</h6>
-                                                    <div id="davidAvg" class="h3">-</div>
-                                                </div>
+                                            <div class="col-12">
+                                                <div id="ratingCorrelationChart" style="width: 100%; height: 500px;"></div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="stats-card">
-                                                    <h6 class="bold-header">Correlation</h6>
-                                                    <div id="correlation" class="h3">-</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Distribution Chart -->
-                                        <div id="ratingsDistribution" style="width: 100%; height: 300px;" class="mb-4"></div>
-
-                                        <!-- Scatter Plot -->
-                                        <div id="ratingsScatterPlot" style="width: 100%; height: 500px;"></div>
-
-                                        <div class="text-center mt-3">
-                                            <small class="text-muted">Click on any point to see the whiskey details</small>
                                         </div>
                                     </div>
                                 </div>
@@ -781,6 +850,37 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Your Next Dram Page -->
+                    <div id="nextdram" style="display: none;" class="position-relative">
+                        <!-- Initial search state -->
+                        <div class="row mb-4" id="initialSearchState">
+                            <div class="col-md-6 mx-auto">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="mb-3 bold-header text-center">Find Your Next Dram</h5>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-search"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="nextDramSearch" placeholder="Search whiskeys...">
+                                        </div>
+                                        <div id="nextDramSearchResults" class="list-group mt-3">
+                                            <!-- Search results will appear here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected whiskey details will appear here -->
+                        <div id="selectedWhiskeyDetails"></div>
+                        
+                        <!-- Recommendations section -->
+                        <div id="recommendationsSection" style="display: none;">
+                            <div id="recommendationsList"></div>
                         </div>
                     </div>
                 </div>
@@ -878,6 +978,20 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this HTML to your page (after your main content): -->
+    <div class="modal fade" id="whiskeyDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Whiskey Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="whiskeyDetailsModalBody">
                 </div>
             </div>
         </div>
@@ -1654,9 +1768,9 @@
             }).filter(r => !isNaN(r));
             
             // Count whiskeys with at least one rating
-            const whiskiesRated = data.filter(w => 
-                w["leslie's_rating"] || w["david's_rating"]
-            ).length;
+            const whiskiesRated = data.reduce((count, w) => {
+                return count + (w["leslie's_rating"] ? 1 : 0) + (w["david's_rating"] ? 1 : 0);
+            }, 0);
             
             const avgRating = allRatings.length > 0 
                 ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
@@ -1820,7 +1934,7 @@
                 <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">${stat.region}</h6>
+                            <h6 class="mb-0"><span class="badge ${getRegionClass(stat.region)} text-white px-3 py-2" style="font-size: 1rem;">${stat.region}</span></h6>
                             <small class="text-muted">Total: ${stat.count} | In Stock: ${stat.inStock}</small>
                         </div>
                         <span class="badge bg-primary">Avg: ${stat.avgRating.toFixed(1)}</span>
@@ -1830,6 +1944,48 @@
 
             document.getElementById('regionDistributionLeft').innerHTML = createRegionHtml(leftColumnStats);
             document.getElementById('regionDistributionRight').innerHTML = createRegionHtml(rightColumnStats);
+
+            // Update the whiskey table with highlighting
+            const whiskeyTableBody = document.getElementById('whiskeyTableBody');
+            if (whiskeyTableBody) {
+                const sortedWhiskeys = [...window.whiskeyData].sort((a, b) => {
+                    const aAvg = (parseFloat(a["leslie's_rating"] || 0) + parseFloat(a["david's_rating"] || 0)) / 2;
+                    const bAvg = (parseFloat(b["leslie's_rating"] || 0) + parseFloat(b["david's_rating"] || 0)) / 2;
+                    return bAvg - aAvg;
+                });
+
+                whiskeyTableBody.innerHTML = sortedWhiskeys.map((whiskey, index) => {
+                    const leslieRating = whiskey["leslie's_rating"] ? parseFloat(whiskey["leslie's_rating"]).toFixed(1) : 'N/A';
+                    const davidRating = whiskey["david's_rating"] ? parseFloat(whiskey["david's_rating"]).toFixed(1) : 'N/A';
+                    
+                    // Add background color classes for top and bottom 5
+                    let rowClass = '';
+                    if (index < 5) {
+                        rowClass = 'bg-success bg-opacity-10'; // Very light green
+                    } else if (index >= sortedWhiskeys.length - 5) {
+                        rowClass = 'bg-danger bg-opacity-10'; // Very light red
+                    }
+
+                    return `
+                        <tr class="${rowClass}" data-whiskey='${JSON.stringify(whiskey).replace(/'/g, "&apos;")}'>
+                            <td>${whiskey.name}</td>
+                            <td>${whiskey.distillery || ''}</td>
+                            <td>${whiskey.region || ''}</td>
+                            <td>${leslieRating}</td>
+                            <td>${davidRating}</td>
+                            <td>${whiskey["in_stock?"] === "Yes" ? '<i class="bi bi-check-circle-fill text-success"></i>' : ''}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Reattach click handlers
+                whiskeyTableBody.querySelectorAll('tr[data-whiskey]').forEach(row => {
+                    row.addEventListener('click', function() {
+                        const whiskey = JSON.parse(this.dataset.whiskey);
+                        showWhiskeyDetails(whiskey);
+                    });
+                });
+            }
         }
 
         function updateDistilleryStats() {
@@ -2508,6 +2664,761 @@
                 mapFrame.src = `${baseUrl}&ll=56.89521033132374%2C-3.526848373432303&z=7`;
             }
         });
+
+        // Update the getRatingScore function to return separate scores
+        function getRatingScore(whiskey1, whiskey2) {
+            const leslieDiff = Math.abs(
+                (whiskey1["leslie's_rating"] ? parseFloat(whiskey1["leslie's_rating"]) : 0) - 
+                (whiskey2["leslie's_rating"] ? parseFloat(whiskey2["leslie's_rating"]) : 0)
+            );
+            const davidDiff = Math.abs(
+                (whiskey1["david's_rating"] ? parseFloat(whiskey1["david's_rating"]) : 0) - 
+                (whiskey2["david's_rating"] ? parseFloat(whiskey2["david's_rating"]) : 0)
+            );
+            
+            return {
+                leslie: whiskey1["leslie's_rating"] && whiskey2["leslie's_rating"] ? (10 - leslieDiff) / 10 : 0,
+                david: whiskey1["david's_rating"] && whiskey2["david's_rating"] ? (10 - davidDiff) / 10 : 0
+            };
+        }
+
+        // Update getSimilarityScore to use new rating scores
+        function getSimilarityScore(whiskey1, whiskey2) {
+            const ratingScores = getRatingScore(whiskey1, whiskey2);
+            const tastingScore = getTastingScore(whiskey1, whiskey2);
+            
+            return (ratingScores.leslie + ratingScores.david + tastingScore) / 3;
+        }
+
+        // Update getRecommendations to only return recommendations
+        function getRecommendations(selectedWhiskey, allWhiskeys, numRecommendations = 5) {
+            function getMatchingNotes(whiskey1, whiskey2) {
+                const notes1 = ((whiskey1["leslie's_thoughts"] || "") + " " + (whiskey1["david's_thoughts"] || "")).toLowerCase();
+                const notes2 = ((whiskey2["leslie's_thoughts"] || "") + " " + (whiskey2["david's_thoughts"] || "")).toLowerCase();
+                
+                const keywords = [
+                    "peaty", "smoky", "sweet", "fruity", "floral", "spicy", 
+                    "vanilla", "oak", "wood", "caramel", "honey", "citrus",
+                    "sherry", "chocolate", "nutty", "malty", "maritime",
+                    "leather", "tobacco", "dried fruit", "apple", "pear",
+                    "rich", "smooth", "complex", "balanced", "light", "heavy",
+                    "toffee", "coffee", "cream", "butter", "salt", "pepper",
+                    "cinnamon", "ginger", "orange", "lemon", "lime", "dark",
+                    "bright", "bold", "subtle", "delicate", "robust", "refined"
+                ];
+                
+                return keywords.filter(keyword => 
+                    notes1.includes(keyword) && notes2.includes(keyword)
+                );
+            }
+
+            const allScores = allWhiskeys
+                .filter(w => w.name !== selectedWhiskey.name)
+                .map(w => {
+                    const ratingScores = getRatingScore(selectedWhiskey, w);
+                    return {
+                        whiskey: w,
+                        score: getSimilarityScore(selectedWhiskey, w),
+                        leslieScore: ratingScores.leslie,
+                        davidScore: ratingScores.david,
+                        tastingScore: getTastingScore(selectedWhiskey, w),
+                        matchingNotes: getMatchingNotes(selectedWhiskey, w)
+                    };
+                });
+
+            // Sort by similarity score and return top recommendations
+            return allScores.sort((a, b) => b.score - a.score).slice(0, numRecommendations);
+        }
+
+        // Update displayRecommendations to only show recommendations
+        function displayRecommendations(recommendations) {
+            const section = document.getElementById('recommendationsSection');
+            const list = document.getElementById('recommendationsList');
+            
+            section.style.display = 'block';
+            
+            const createWhiskeyCard = (rec) => {
+                return `
+                    <div class="col-md-6 mb-4">
+                        <div class="card glow-card h-100" style="cursor: pointer;" data-whiskey='${JSON.stringify(rec.whiskey).replace(/'/g, "&apos;")}'>
+                            <div class="card-header ${getRegionClass(rec.whiskey.region)}">
+                                <h5 class="card-title mb-0 text-white">${rec.whiskey.name}</h5>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-white-50">${rec.whiskey.distillery}</small>
+                                    ${rec.whiskey.reference_good_price ? `
+                                        <small class="text-white-50">$${rec.whiskey.reference_good_price}</small>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="progress mb-2" style="height: 5px;">
+                                        <div class="progress-bar bg-success" style="width: ${rec.score * 100}%"></div>
+                                    </div>
+                                    <small class="text-muted">Overall Match: ${(rec.score * 100).toFixed(1)}%</small>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="text-muted small">Leslie's Match</div>
+                                            <div class="h6 mb-0">${(rec.leslieScore * 100).toFixed(0)}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="text-muted small">David's Match</div>
+                                            <div class="h6 mb-0">${(rec.davidScore * 100).toFixed(0)}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="text-muted small">Taste Match</div>
+                                            <div class="h6 mb-0">${(rec.tastingScore * 100).toFixed(0)}%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${rec.matchingNotes.length > 0 ? `
+                                    <div class="mt-3">
+                                        <small class="text-muted">Matching notes:</small>
+                                        <div class="mt-1">
+                                            ${rec.matchingNotes.map(note => 
+                                                `<span class="badge bg-light text-dark me-1 mb-1">${note}</span>`
+                                            ).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            list.innerHTML = `
+                <div class="col-12 mb-4">
+                    <h4 class="bold-header">Recommended Similar Whiskeys</h4>
+                    <div class="row">
+                        ${recommendations.map(rec => createWhiskeyCard(rec)).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Add click handlers to recommendation cards
+            list.querySelectorAll('[data-whiskey]').forEach(card => {
+                card.addEventListener('click', function() {
+                    const whiskey = JSON.parse(this.dataset.whiskey);
+                    const modal = new bootstrap.Modal(document.getElementById('whiskeyDetailsModal'));
+                    const modalBody = document.getElementById('whiskeyDetailsModalBody');
+                    
+                    modalBody.innerHTML = `
+                        <div class="card">
+                            <div class="card-header ${getRegionClass(whiskey.region)}">
+                                <h5 class="card-title mb-0 text-white">${whiskey.name}</h5>
+                                <small class="text-white-50">${whiskey.distillery} - ${whiskey.region}</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3">Leslie's Rating</h6>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="h3 mb-0 me-2">${whiskey["leslie's_rating"] ? parseFloat(whiskey["leslie's_rating"]).toFixed(1) : 'N/A'}</div>
+                                            ${whiskey["leslie's_rating"] ? `
+                                                <div class="text-warning" style="font-size: 1.4rem; letter-spacing: 3px;">
+                                                    ${'★'.repeat(Math.round(parseFloat(whiskey["leslie's_rating"]) / 2))}${'☆'.repeat(5 - Math.round(parseFloat(whiskey["leslie's_rating"]) / 2))}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        ${whiskey["leslie's_thoughts"] ? `
+                                            <p class="mb-0">${whiskey["leslie's_thoughts"]}</p>
+                                        ` : ''}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3">David's Rating</h6>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="h3 mb-0 me-2">${whiskey["david's_rating"] ? parseFloat(whiskey["david's_rating"]).toFixed(1) : 'N/A'}</div>
+                                            ${whiskey["david's_rating"] ? `
+                                                <div class="text-warning" style="font-size: 1.4rem; letter-spacing: 3px;">
+                                                    ${'★'.repeat(Math.round(parseFloat(whiskey["david's_rating"]) / 2))}${'☆'.repeat(5 - Math.round(parseFloat(whiskey["david's_rating"]) / 2))}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        ${whiskey["david's_thoughts"] ? `
+                                            <p class="mb-0">${whiskey["david's_thoughts"]}</p>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    modal.show();
+                });
+            });
+        }
+
+        // UI Functions for Next Dram
+        function displayWhiskeyDetails(whiskey) {
+            // Store the selected whiskey for comparison
+            window.selectedWhiskey = whiskey;
+            
+            // Hide the initial search state
+            document.getElementById('initialSearchState').style.display = 'none';
+            
+            // Extract keywords and create the details HTML
+            const foundKeywords = extractKeywords(whiskey);
+            const details = document.getElementById('selectedWhiskeyDetails');
+            
+            details.innerHTML = `
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="persistentNextDramSearch" placeholder="Search more whiskeys...">
+                                </div>
+                                <div id="persistentNextDramSearchResults" class="list-group mt-2" style="position: absolute; width: calc(100% - 2rem); z-index: 1000;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card glow-card mb-4">
+                    <div class="card-header ${getRegionClass(whiskey.region)}">
+                        <h5 class="card-title mb-0 text-white">${whiskey.name}</h5>
+                        <small class="text-white-50">${whiskey.distillery} - ${whiskey.region}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0 bold-header">Selected Whiskey</h4>
+                                    ${whiskey.reference_good_price ? `
+                                        <small class="text-muted">Reference Price: $${whiskey.reference_good_price}</small>
+                                    ` : ''}
+                                </div>
+                                <hr class="my-3">
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <h5 class="mb-0 bold-header me-3">Leslie</h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="h3 mb-0 me-2">${whiskey["leslie's_rating"] ? parseFloat(whiskey["leslie's_rating"]).toFixed(1) : 'N/A'}</div>
+                                        ${whiskey["leslie's_rating"] ? `
+                                            <div class="text-warning" style="font-size: 1.4rem; letter-spacing: 3px;">
+                                                ${'★'.repeat(Math.round(parseFloat(whiskey["leslie's_rating"]) / 2))}${'☆'.repeat(5 - Math.round(parseFloat(whiskey["leslie's_rating"]) / 2))}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                ${whiskey["leslie's_thoughts"] ? `
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <p class="mb-0">${whiskey["leslie's_thoughts"]}</p>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <h5 class="mb-0 bold-header me-3">David</h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="h3 mb-0 me-2">${whiskey["david's_rating"] ? parseFloat(whiskey["david's_rating"]).toFixed(1) : 'N/A'}</div>
+                                        ${whiskey["david's_rating"] ? `
+                                            <div class="text-warning" style="font-size: 1.4rem; letter-spacing: 3px;">
+                                                ${'★'.repeat(Math.round(parseFloat(whiskey["david's_rating"]) / 2))}${'☆'.repeat(5 - Math.round(parseFloat(whiskey["david's_rating"]) / 2))}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                ${whiskey["david's_thoughts"] ? `
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <p class="mb-0">${whiskey["david's_thoughts"]}</p>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            ${foundKeywords.length > 0 ? `
+                                <div class="col-12">
+                                    <hr class="my-3">
+                                    <h6 class="mb-3 bold-header">Flavor Profile</h6>
+                                    <div class="mb-3">
+                                        ${foundKeywords.map(keyword => 
+                                            `<span class="badge bg-light text-dark me-2 mb-2 flavor-tag" role="button" 
+                                                data-keyword="${keyword}" style="cursor: pointer;">${keyword}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Attach event listener to the new search input
+            document.getElementById('persistentNextDramSearch').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const resultsContainer = document.getElementById('persistentNextDramSearchResults');
+                
+                if (!searchTerm) {
+                    resultsContainer.innerHTML = '';
+                    return;
+                }
+                
+                const matches = window.whiskeyData
+                    .filter(w => 
+                        w.name.toLowerCase().includes(searchTerm) || 
+                        w.distillery?.toLowerCase().includes(searchTerm)
+                    )
+                    .slice(0, 10);
+                
+                resultsContainer.innerHTML = matches.map(w => `
+                    <div class="list-group-item list-group-item-action" role="button" data-whiskey='${JSON.stringify(w).replace(/'/g, "&apos;")}'>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">${w.name}</h6>
+                                <small class="text-muted">${w.distillery} - ${w.region}</small>
+                            </div>
+                            <div class="text-end">
+                                <small>L: ${w["leslie's_rating"] || 'N/A'} | D: ${w["david's_rating"] || 'N/A'}</small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add click handlers to search results
+                resultsContainer.querySelectorAll('.list-group-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const newWhiskey = JSON.parse(this.dataset.whiskey);
+                        displayWhiskeyDetails(newWhiskey);
+                        // Clear the search input and results after selection
+                        document.getElementById('persistentNextDramSearch').value = '';
+                        resultsContainer.innerHTML = '';
+                    });
+                });
+            });
+            
+            // Get and display recommendations
+            const recommendations = getRecommendations(whiskey, window.whiskeyData);
+            displayRecommendations(recommendations);
+
+            // Add this after the template string
+            // Attach click handlers to flavor tags
+            document.querySelectorAll('.flavor-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const keyword = this.dataset.keyword;
+                    const modal = new bootstrap.Modal(document.getElementById('flavorProfileModal'));
+                    const modalBody = document.getElementById('flavorProfileModalBody');
+                    
+                    // Find whiskeys with matching keyword
+                    const matchingWhiskeys = window.whiskeyData
+                        .filter(w => {
+                            const notes = ((w["leslie's_thoughts"] || "") + " " + (w["david's_thoughts"] || "")).toLowerCase();
+                            return notes.includes(keyword.toLowerCase());
+                        })
+                        .sort((a, b) => {
+                            const aRating = (parseFloat(a["leslie's_rating"] || 0) + parseFloat(a["david's_rating"] || 0)) / 2;
+                            const bRating = (parseFloat(b["leslie's_rating"] || 0) + parseFloat(b["david's_rating"] || 0)) / 2;
+                            return bRating - aRating;
+                        })
+                        .slice(0, 10);
+
+                    // Update modal title
+                    document.querySelector('#flavorProfileModal .modal-title').textContent = 
+                        `Top Whiskeys featuring "${keyword}"`;
+
+                    // Create the content
+                    modalBody.innerHTML = `
+                        <div class="list-group">
+                            ${matchingWhiskeys.map(w => `
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">${w.name}</h6>
+                                            <small class="text-muted">${w.distillery} - ${w.region}</small>
+                                            ${w["leslie's_thoughts"] || w["david's_thoughts"] ? `
+                                                <p class="mb-1 mt-2 small">
+                                                    ${w["leslie's_thoughts"] ? `<strong>Leslie:</strong> ${w["leslie's_thoughts"]}<br>` : ''}
+                                                    ${w["david's_thoughts"] ? `<strong>David:</strong> ${w["david's_thoughts"]}` : ''}
+                                                </p>
+                                            ` : ''}
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="mb-1">
+                                                <span class="badge bg-secondary">L: ${w["leslie's_rating"] || 'N/A'}</span>
+                                                <span class="badge bg-secondary">D: ${w["david's_rating"] || 'N/A'}</span>
+                                            </div>
+                                            ${w.reference_good_price ? `
+                                                <small class="text-muted">$${w.reference_good_price}</small>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+
+                    modal.show();
+                });
+            });
+        }
+
+        // Extract the search handler to a separate function for reuse
+        function handleNextDramSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const resultsContainer = document.getElementById('nextDramSearchResults');
+            
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            
+            const matches = window.whiskeyData
+                .filter(w => 
+                    w.name.toLowerCase().includes(searchTerm) || 
+                    w.distillery?.toLowerCase().includes(searchTerm)
+                )
+                .slice(0, 10);
+            
+            resultsContainer.innerHTML = matches.map(w => `
+                <div class="list-group-item list-group-item-action" role="button" data-whiskey='${JSON.stringify(w).replace(/'/g, "&apos;")}'>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">${w.name}</h6>
+                            <small class="text-muted">${w.distillery} - ${w.region}</small>
+                        </div>
+                        <div class="text-end">
+                            <small>L: ${w["leslie's_rating"] || 'N/A'} | D: ${w["david's_rating"] || 'N/A'}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers to search results
+            resultsContainer.querySelectorAll('.list-group-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const whiskey = JSON.parse(this.dataset.whiskey);
+                    displayWhiskeyDetails(whiskey);
+                });
+            });
+        }
+
+        // Update the initial search event listener
+        document.getElementById('nextDramSearch').addEventListener('input', handleNextDramSearch);
+
+        function extractKeywords(whiskey) {
+            const notes = ((whiskey["leslie's_thoughts"] || "") + " " + (whiskey["david's_thoughts"] || "")).toLowerCase();
+            const keywords = [
+                "peaty", "smoky", "sweet", "fruity", "floral", "spicy", 
+                "vanilla", "oak", "wood", "caramel", "honey", "citrus",
+                "sherry", "chocolate", "nutty", "malty", "maritime",
+                "leather", "tobacco", "dried fruit", "apple", "pear",
+                "rich", "smooth", "complex", "balanced", "light", "heavy",
+                "toffee", "coffee", "cream", "butter", "salt", "pepper",
+                "cinnamon", "ginger", "orange", "lemon", "lime", "dark",
+                "bright", "bold", "subtle", "delicate", "robust", "refined"
+            ];
+            
+            return keywords.filter(keyword => notes.includes(keyword));
+        }
+
+        function getTastingScore(whiskey1, whiskey2) {
+            const notes1 = (whiskey1["leslie's_thoughts"] || "") + " " + (whiskey1["david's_thoughts"] || "");
+            const notes2 = (whiskey2["leslie's_thoughts"] || "") + " " + (whiskey2["david's_thoughts"] || "");
+            
+            const keywords = [
+                "peaty", "smoky", "sweet", "fruity", "floral", "spicy", 
+                "vanilla", "oak", "wood", "caramel", "honey", "citrus",
+                "sherry", "chocolate", "nutty", "malty", "maritime",
+                "leather", "tobacco", "dried fruit", "apple", "pear",
+                "rich", "smooth", "complex", "balanced", "light", "heavy",
+                "toffee", "coffee", "cream", "butter", "salt", "pepper",
+                "cinnamon", "ginger", "orange", "lemon", "lime", "dark",
+                "bright", "bold", "subtle", "delicate", "robust", "refined"
+            ];
+            
+            const matches = keywords.filter(keyword => 
+                notes1.toLowerCase().includes(keyword) && 
+                notes2.toLowerCase().includes(keyword)
+            ).length;
+            
+            const total = keywords.filter(keyword => 
+                notes1.toLowerCase().includes(keyword) || 
+                notes2.toLowerCase().includes(keyword)
+            ).length;
+            
+            return total ? matches / total : 0;
+        }
+
+        function getRegionScore(whiskey1, whiskey2) {
+            const region1 = normalizeRegion(whiskey1.region);
+            const region2 = normalizeRegion(whiskey2.region);
+            
+            if (region1 === region2) return 1.0;
+            
+            const neighbors = {
+                'Highland': ['Speyside', 'Islands'],
+                'Speyside': ['Highland'],
+                'Islands': ['Highland', 'Islay'],
+                'Islay': ['Islands', 'Campbeltown'],
+                'Campbeltown': ['Islay', 'Lowland'],
+                'Lowland': ['Campbeltown', 'Highland']
+            };
+            
+            if (neighbors[region1]?.includes(region2)) return 0.5;
+            
+            return 0;
+        }
+
+        // Initialize Next Dram search functionality
+        document.getElementById('nextDramSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const resultsContainer = document.getElementById('nextDramSearchResults');
+            
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            
+            const matches = window.whiskeyData
+                .filter(w => 
+                    w.name.toLowerCase().includes(searchTerm) || 
+                    w.distillery?.toLowerCase().includes(searchTerm)
+                )
+                .slice(0, 10);
+            
+            resultsContainer.innerHTML = matches.map(w => `
+                <div class="list-group-item list-group-item-action" role="button" data-whiskey='${JSON.stringify(w).replace(/'/g, "&apos;")}'>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">${w.name}</h6>
+                            <small class="text-muted">${w.distillery} - ${w.region}</small>
+                        </div>
+                        <div class="text-end">
+                            <small>L: ${w["leslie's_rating"] || 'N/A'} | D: ${w["david's_rating"] || 'N/A'}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers to search results
+            resultsContainer.querySelectorAll('.list-group-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const whiskey = JSON.parse(this.dataset.whiskey);
+                    displayWhiskeyDetails(whiskey);
+                });
+            });
+        });
+
+        // Navigation handling
+        document.querySelectorAll('#mainNav .nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('#mainNav .nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Hide all pages
+                document.querySelectorAll('#summary, #compendium, #distilleries, #byregion, #map, #ratings, #nextdram').forEach(page => {
+                    page.style.display = 'none';
+                });
+                
+                // Show selected page
+                const pageId = this.getAttribute('data-page');
+                const selectedPage = document.getElementById(pageId);
+                if (selectedPage) {
+                    selectedPage.style.display = 'block';
+                    
+                    // Update charts if on ratings page
+                    if (pageId === 'ratings') {
+                        setTimeout(updateRatingCharts, 100); // Add small delay to ensure DOM is ready
+                    }
+                    
+                    // Show/hide region legend for specific pages
+                    const regionLegend = document.querySelector('.region-legend');
+                    if (regionLegend) {
+                        regionLegend.style.display = ['byregion', 'map', 'nextdram'].includes(pageId) ? 'block' : 'none';
+                    }
+                }
+            });
+        });
+
+        // Initialize the page when data is loaded
+        function initializePage() {
+            // Update all statistics and charts
+            updateSummaryStats();
+            updateDistilleryStats();
+            updateRegionStats();
+            
+            // Show the landing overlay
+            const landingOverlay = document.getElementById('landingOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (landingOverlay && mainContent) {
+                landingOverlay.style.display = 'flex';
+                mainContent.style.display = 'none';
+                
+                // Add click handler to the landing overlay
+                landingOverlay.addEventListener('click', function() {
+                    landingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        landingOverlay.style.display = 'none';
+                        mainContent.style.display = 'block';
+                        setTimeout(() => {
+                            mainContent.classList.add('fade-in');
+                            
+                            // Show the initial page (summary)
+                            document.querySelectorAll('#summary, #compendium, #distilleries, #byregion, #map, #ratings, #nextdram').forEach(page => {
+                                page.style.display = 'none';
+                            });
+                            document.getElementById('summary').style.display = 'block';
+                        }, 50);
+                    }, 1000);
+                });
+            }
+        }
+
+        // Call initializePage when the data is loaded
+        fetch('whiskey_data.json')
+            .then(response => response.json())
+            .then(data => {
+                window.whiskeyData = data;
+                initializePage();
+            })
+            .catch(error => {
+                console.error('Error loading whiskey data:', error);
+            });
+
+        // Add this function to handle rating chart updates
+        function updateRatingCharts() {
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawRatingCharts);
+
+            function drawRatingCharts() {
+                // Leslie's Ratings Distribution
+                const leslieData = new google.visualization.DataTable();
+                leslieData.addColumn('string', 'Rating');
+                leslieData.addColumn('number', 'Count');
+                
+                const leslieRatings = window.whiskeyData
+                    .map(w => w["leslie's_rating"])
+                    .filter(r => r !== null && r !== undefined && r !== '' && !isNaN(parseFloat(r)))
+                    .map(r => parseFloat(r));
+                
+                const leslieCounts = {};
+                leslieRatings.forEach(rating => {
+                    const roundedRating = Math.round(rating * 2) / 2;
+                    leslieCounts[roundedRating] = (leslieCounts[roundedRating] || 0) + 1;
+                });
+                
+                Object.entries(leslieCounts)
+                    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+                    .forEach(([rating, count]) => {
+                        leslieData.addRow([rating.toString(), count]);
+                    });
+
+                const leslieOptions = {
+                    title: "Leslie's Rating Distribution",
+                    legend: { position: 'none' },
+                    colors: ['#d4af37'],
+                    vAxis: { title: 'Number of Whiskeys', minValue: 0 },
+                    hAxis: { title: 'Rating', minValue: 0, maxValue: 10 },
+                    bar: { gap: 0 },
+                    histogram: { bucketSize: 0.5 }
+                };
+
+                const leslieChart = new google.visualization.ColumnChart(document.getElementById('leslieRatingChart'));
+                leslieChart.draw(leslieData, leslieOptions);
+
+                // David's Ratings Distribution
+                const davidData = new google.visualization.DataTable();
+                davidData.addColumn('string', 'Rating');
+                davidData.addColumn('number', 'Count');
+                
+                const davidRatings = window.whiskeyData
+                    .map(w => w["david's_rating"])
+                    .filter(r => r !== null && r !== undefined && r !== '' && !isNaN(parseFloat(r)))
+                    .map(r => parseFloat(r));
+                
+                const davidCounts = {};
+                davidRatings.forEach(rating => {
+                    const roundedRating = Math.round(rating * 2) / 2;
+                    davidCounts[roundedRating] = (davidCounts[roundedRating] || 0) + 1;
+                });
+                
+                Object.entries(davidCounts)
+                    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+                    .forEach(([rating, count]) => {
+                        davidData.addRow([rating.toString(), count]);
+                    });
+
+                const davidOptions = {
+                    title: "David's Rating Distribution",
+                    legend: { position: 'none' },
+                    colors: ['#d4af37'],
+                    vAxis: { title: 'Number of Whiskeys', minValue: 0 },
+                    hAxis: { title: 'Rating', minValue: 0, maxValue: 10 },
+                    bar: { gap: 0 },
+                    histogram: { bucketSize: 0.5 }
+                };
+
+                const davidChart = new google.visualization.ColumnChart(document.getElementById('davidRatingChart'));
+                davidChart.draw(davidData, davidOptions);
+
+                // Rating Correlation Chart
+                const correlationData = new google.visualization.DataTable();
+                correlationData.addColumn('number', "Leslie's Rating");
+                correlationData.addColumn('number', "David's Rating");
+                
+                const pairedRatings = window.whiskeyData
+                    .filter(w => 
+                        w["leslie's_rating"] && w["david's_rating"] && 
+                        !isNaN(parseFloat(w["leslie's_rating"])) && 
+                        !isNaN(parseFloat(w["david's_rating"]))
+                    )
+                    .map(w => [
+                        parseFloat(w["leslie's_rating"]), 
+                        parseFloat(w["david's_rating"])
+                    ]);
+                
+                correlationData.addRows(pairedRatings);
+
+                const correlationOptions = {
+                    title: 'Rating Correlation',
+                    hAxis: { title: "Leslie's Rating", minValue: 0, maxValue: 10 },
+                    vAxis: { title: "David's Rating", minValue: 0, maxValue: 10 },
+                    legend: 'none',
+                    pointSize: 5,
+                    colors: ['#d4af37'],
+                    trendlines: { 0: {} }
+                };
+
+                const correlationChart = new google.visualization.ScatterChart(document.getElementById('ratingCorrelationChart'));
+                correlationChart.draw(correlationData, correlationOptions);
+            }
+        }
     </script>
 </body>
 </html>
+
+<!-- Add this right before </body> -->
+<div class="modal fade" id="flavorProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Similar Flavor Profiles</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="flavorProfileModalBody">
+            </div>
+        </div>
+    </div>
+</div>
